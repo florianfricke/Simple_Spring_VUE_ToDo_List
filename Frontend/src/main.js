@@ -3,8 +3,13 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import '@fortawesome/fontawesome-free/css/all.min.css'
+import 'bootstrap'
+import 'bootstrap/dist/css/bootstrap.min.css'
 
 Vue.config.productionTip = false
+
+export const serverBus = new Vue();
 
 /* eslint-disable no-new */
 new Vue({

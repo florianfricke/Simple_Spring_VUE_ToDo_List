@@ -1,0 +1,52 @@
+version: '3.3'
+
+services:
+  mysql_database:
+    image: mysql:5.7
+    container_name: mysql_database
+    environment:
+      MYSQL_ROOT_PASSWORD: 'password'
+      MYSQL_DATABASE: 'to_do_list_database'
+      MYSQL_USER: 'user'
+      MYSQL_PASSWORD: 'password'
+    ports:
+      - '3306:3306'
+    volumes:
+      - spring_boot_mysql_database_data:/var/lib/mysql
+    networks:
+      - backend_network
+
+  spring_boot:
+    image: openjdk:8-jdk-alpine
+    container_name: spring_boot
+    ports:
+      - '8085:8085'
+    depends_on:
+      - mysql_database
+    volumes:
+      - ../Backend/build/libs/todolist-0.0.1-SNAPSHOT.jar:/application.jar
+    command: ["java", "-jar", "application.jar"]
+    networks:
+      - backend_network
+      - frontend_network
+
+  vue_frontend_develop:
+    image: nginx:stable-alpine
+    container_name: vue_frontend
+    ports:
+    - '8080:80'
+    depends_on:
+      - mysql_database
+      - spring_boot
+    volumes:
+    - ../Frontend/dist:/usr/share/nginx/html
+    command: ["nginx", "-g", "daemon off;"]
+    networks:
+      - frontend_network
+
+volumes:
+  spring_boot_mysql_database_data:
+
+networks:
+  backend_network:
+  frontend_network:

@@ -17,8 +17,8 @@
             <input
               type="text"
               class="taskName form-control"
-              v-bind:class="{'taskNameEdit': isEditActive && activeEditTaskID == task.taskID}"
-              :disabled="!(isEditActive && activeEditTaskID == task.taskID)"
+              v-bind:class="{'taskNameEdit': checkIsEditActive(task.taskID)}"
+              :disabled="!checkIsEditActive(task.taskID)"
               v-model="task.name"
               value="task.name"
             />
@@ -27,8 +27,8 @@
             <textarea
               v-model="task.description"
               value="task.taskDescription"
-              v-bind:class="{'taskNameEdit': isEditActive && activeEditTaskID == task.taskID}"
-              :disabled="!(isEditActive && activeEditTaskID == task.taskID)"
+              v-bind:class="{'taskNameEdit': checkIsEditActive(task.taskID)}"
+              :disabled="!checkIsEditActive(task.taskID)"
               class="form-control textarea-description-list"
               name
               id
@@ -40,8 +40,8 @@
             <input
               v-model="task.priority"
               class="form-control input-priority-list"
-              v-bind:class="{'taskNameEdit': isEditActive && activeEditTaskID == task.taskID}"
-              :disabled="!(isEditActive && activeEditTaskID == task.taskID)"
+              v-bind:class="{'taskNameEdit': checkIsEditActive(task.taskID)}"
+              :disabled="!checkIsEditActive(task.taskID)"
               value="task.priority"
               type="number"
             />
@@ -50,11 +50,11 @@
             <div class="icon-list">
               <button
                 class="btn btn-edit"
-                v-bind:class="[isEditActive && activeEditTaskID == task.taskID ? 'btn-success' : 'btn-primary']"
+                v-bind:class="[checkIsEditActive(task.taskID) ? 'btn-success' : 'btn-primary']"
                 v-on:click="editTask($event, task.taskID)"
               >
                 <i
-                  v-bind:class="[isEditActive && activeEditTaskID == task.taskID ? 'fas fa-check' : 'fas fa-edit']"
+                  v-bind:class="[checkIsEditActive(task.taskID) ? 'fas fa-check' : 'fas fa-edit']"
                 ></i>
               </button>
               <button class="btn btn-danger btn-remove" v-on:click="removeTask(task.taskID, index)">
@@ -92,15 +92,22 @@ export default {
     };
   },
   methods: {
-    getPageDataFromBackend(pageNumber) {
+    checkIsEditActive: function(taskID) {
+      if (this.isEditActive && this.activeEditTaskID == taskID) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    getPageDataFromBackend: function(pageNumber) {
       SpringBackend.get("tasksPaging/"+pageNumber)
         .then(response => (this.tasks = response.data))
         .catch(error => console.log(error));
     },
-    roundNumber(number) {
+    roundNumber: function(number) {
       return Math.ceil(number);
     },
-    editTask(event, taskID) {
+    editTask: function(event, taskID) {
       this.activeEditTaskID = taskID;
       this.disabled = false;
       if (!this.isEditActive) {
